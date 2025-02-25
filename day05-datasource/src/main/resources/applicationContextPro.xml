@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation=
+               "http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context.xsd
+                ">
+
+        <!--1.开启命名空间-->
+        <!--2.使用 context 空间加载 properties 文件-->
+       <!-- <context:property-placeholder location="jdbc.properties" system-properties-mode="NEVER"/>
+        <context:property-placeholder location="jdbc.properties,jdbc2.properties" system-properties-mode="NEVER"/>
+        <context:property-placeholder location="*.properties" system-properties-mode="NEVER"/>
+        <context:property-placeholder location="classpath:*.properties" system-properties-mode="NEVER"/>  -->
+        <!--加载最全的方式，除了本项目路径下的 properties，还可以加载 jar 包下的properties -->
+        <context:property-placeholder location="classpath*:*.properties" system-properties-mode="NEVER"/>
+
+        <!--3.使用属性占位符 ${} 加载 properties 文件内容-->
+        <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+            <property name="driverClassName" value="${jdbc.driver}"/>
+            <property name="url" value="${jdbc.url}"/>
+            <property name="username" value="${jdbc.username}"/>
+            <property name="password" value="${jdbc.password}"/>
+        </bean>
+
+        <bean id="userDao" class="com.alivinfer.dao.impl.UserDaoImpl">
+            <property name="name" value="${jdbc.driver}"/>
+        </bean>
+</beans>
