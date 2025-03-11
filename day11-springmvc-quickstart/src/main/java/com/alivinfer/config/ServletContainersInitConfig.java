@@ -44,7 +44,7 @@ public class ServletContainersInitConfig extends AbstractDispatcherServletInitia
     @NonNull
     protected String[] getServletMappings() {
         // 返回一个包含根路径（"/"）的字符串数组
-        return new String[]{"/web"};
+        return new String[]{"/"};
     }
 
 
