@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+">
+
+    <!--1、mvc注解驱动-->
+    <mvc:annotation-driven/>
+
+    <!--2、配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--3、静态资源权限开放(Spring MVC 不会拦截静态资源，而是交给 Tomcat 处理)-->
+    <!--css、js、images 文件-->
+    <mvc:default-servlet-handler/>
+
+    <!--4、组件扫描  扫描Controller-->
+    <context:component-scan base-package="com.alivinfer.controller"/>
+
+    <!--配置权限拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--配置对哪些资源执行拦截操作; /** 拦截 所有路径  /* 只拦截 一级路径-->
+            <mvc:mapping path="/**"/>
+            <!--配置哪些资源排除拦截操作, 一般是拦截一起设置排除。由于上面第三步配置了交给 tomcat 处理，即可以不设置-->
+            <mvc:exclude-mapping path="/user/login"/>
+            <mvc:exclude-mapping path="/login.jsp"/>
+
+            <!-- 放行静态资源 -->
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/img/**"/>
+            <mvc:exclude-mapping path="/plugins/**"/>
+            <bean class="com.alivinfer.interceptor.PrivilegeInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!--配置异常处理器-->
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <!--默认错误视图-->
+        <property name="defaultErrorView" value="error"/>
+        <property name="exceptionMappings">
+            <map>
+                <entry key="com.alivinfer.exception.MyException" value="error"/>
+                <entry key="java.lang.ClassCastException" value="error"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--自定义异常处理器-->
+    <bean class="com.alivinfer.resolver.MyExceptionResolver"/>
+
+</beans>
