@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alivinfer.dao.UserMapperTest">
+
+    <!--抽取语句-->
+    <sql id="selectUser">select * from user</sql>
+
+    <!--映射结果-->
+    <resultMap id="userMap" type="com.alivinfer.domain.User">
+        <id column="userId" property="id"/>
+        <result column="userName" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="birthday" property="birthday"/>
+
+        <!--配置集合信息
+           property: 集合名称
+           ofType：当前集合中的数据类型
+           collection: 用于查询一对多的关系映射
+       -->
+        <collection property="orders" ofType="com.alivinfer.domain.Order">
+            <id column="orderId" property="id"/>
+            <result column="orderTime" property="orderTime"/>
+            <result column="total" property="total"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="userRoleMap" type="com.alivinfer.domain.User">
+        <id column="user_id" property="id"/>
+        <result column="userMame" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="birthday" property="birthday"/>
+
+        <collection property="roles" ofType="com.alivinfer.domain.Role">
+            <id column="role_id" property="id"/>
+            <result column="role_name" property="roleName"/>
+            <result column="roleDesc" property="roleDesc"/>
+        </collection>
+    </resultMap>
+
+    <!--查询操作-->
+    <select id="findAll" resultType="com.alivinfer.domain.User">
+        select * from user
+    </select>
+
+    <!--根据id进行查询-->
+    <select id="findById" parameterType="int" resultType="com.alivinfer.domain.User">
+        select * from user where id = #{id}
+    </select>
+
+    <!--动态SQL-->
+    <select id="findByCondition" parameterType="com.alivinfer.domain.User" resultType="com.alivinfer.domain.User">
+        <include refid="selectUser"/>
+        <where>
+            <if test="id != 0">
+                and id = #{id}
+            </if>
+            <if test="userName != null">
+                and userName = #{userName}
+            </if>
+            <if test="password != null">
+                and password = #{password}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByIds" parameterType="list" resultType="com.alivinfer.domain.User">
+        <include refid="selectUser"/>
+        <where>
+            <foreach collection="idList" item="id" open="id in (" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <update id="save" parameterType="com.alivinfer.domain.User">
+        insert into user values (#{id}, #{userName}, #{password}, #{birthday})
+    </update>
+
+    <!--一对多查询用户订单-->
+    <select id="findAllOrder" resultMap="userMap">
+        SELECT
+            u.id AS userId,
+            u.userName,
+            u.password,
+            u.birthday,
+            o.id AS orderId,
+            o.orderTime,
+            o.total
+        FROM `user` u
+                 LEFT JOIN `order` o ON u.id = o.uid;
+    </select>
+
+    <select id="findAllWithRoles" resultMap="userRoleMap">
+        SELECT u.id AS user_id, u.username, r.id AS role_id, r.roleName AS role_name, r.roleDesc
+        FROM `user` u
+                 LEFT JOIN `user_role` ur ON u.id = ur.user_id
+                 LEFT JOIN role r ON ur.role_id = r.id;
+    </select>
+
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alivinfer.dao.OrderMapper">
+    <resultMap id="orderMap" type="com.alivinfer.domain.Order">
+        <!--手动指定字段与实体属性的映射关系
+          <id>：用于映射主键字段，帮助 MyBatis 优化缓存和对象匹配
+          column: 数据表的字段名称
+          property: 实体的属性名称
+          result: 用于映射普通字段
+      -->
+        <id column="uid" property="id"/>
+        <result column="orderTime" property="orderTime"/>
+        <result column="total" property="total"/>
+
+        <!--
+          property: 当前实体(order)中的属性名称(private User user)
+          javaType: 当前实体(order)中的属性的类型(User)
+          association 用于一对一
+      -->
+        <association property="user" javaType="com.alivinfer.domain.User">
+            <id column="id" property="id"/>
+            <result column="username" property="userName"/>
+            <result column="password" property="password"/>
+            <result column="birthday" property="birthday"/>
+        </association>
+    </resultMap>
+    
+
+    <!--多表查询（一对一）：一个订单属于一个用户-->
+    <select id="findAllOrder" resultMap="orderMap">
+        select * from `order` o, user u where o.uid = u.id;
+    </select>
+
+</mapper>

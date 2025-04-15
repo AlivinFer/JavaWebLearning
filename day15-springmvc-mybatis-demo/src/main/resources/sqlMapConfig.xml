@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--加载外部 jdbc 配置-->
+    <properties resource="jdbc.properties"/>
+
+    <!--将执行的 sql 打印到控制台-->
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+    <!--自定以路径-->
+    <typeAliases>
+        <typeAlias type="com.alivinfer.domain.User" alias="user"/>
+        <typeAlias type="com.alivinfer.domain.Order" alias="order"/>
+        <typeAlias type="com.alivinfer.domain.Role" alias="role"/>
+    </typeAliases>
+
+    <typeHandlers>
+        <typeHandler handler="com.alivinfer.handle.DateTypeHandler"/>
+    </typeHandlers>
+
+    <!--配置分页插件-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!-- 数据库类型 -->
+            <property name="helperDialect" value="mysql"/>
+            <!-- 是否启用合理化分页 -->
+            <property name="reasonable" value="true"/>
+            <!-- 支持通过 Mapper 方法参数传递分页参数 -->
+            <property name="supportMethodsArguments" value="true"/>
+        </plugin>
+    </plugins>
+    
+    <!--数据源环境-->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--加载映射文件-->
+    <mappers>
+        <mapper resource="com/alivinfer/mapper/UserMapper.xml"/>
+        <mapper resource="com/alivinfer/mapper/OrderMapper.xml"/>
+    </mappers>
+
+</configuration>
